@@ -11,8 +11,6 @@ cp .env.example .env.local
 npm run dev
 ```
 
-`NEXT_PUBLIC_API_BASE_URL` defaults to `https://api.bixx.co.ke`. Paths are
-appended as `/api/...`, so the value must not include a trailing slash.
 
 ## Gateway routes in use
 
@@ -29,24 +27,7 @@ appended as `/api/...`, so the value must not include a trailing slash.
 
 All of them live in `src/lib/api/endpoints.ts`.
 
-## Field mapping
 
-I could not read the expanded schema bodies, so `src/lib/api/mappers.ts`
-normalises `EventResponse`, `MarketResponse`, `PriceResponse` and
-`ScoreResponse` into the view model using a `pick` helper that accepts several
-likely key names per field. Once you confirm the real property names, replace
-the alias arrays with the single correct key. Nothing outside that file needs
-to change.
-
-`BetRequest` is sent as `{ stake, slips: [{ eventId, marketId, priceId, odds }] }`.
-Correct the shape in `src/lib/api/types.ts` if the gateway differs.
-
-## Auth
-
-Tokens are held in `localStorage` by `src/lib/api/token.ts`. Every request
-attaches the bearer token; a 401 triggers one refresh attempt against
-`/api/auth/refresh` and replays the original request, then clears the session
-if the refresh also fails.
 
 ## Structure
 
