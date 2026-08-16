@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme {
+  --color-base: var(--bixx-base);
+  --color-panel: var(--bixx-panel);
+  --color-panel-2: var(--bixx-panel-2);
+  --color-raise: var(--bixx-raise);
+  --color-line: var(--bixx-line);
+  --color-ink: var(--bixx-ink);
+  --color-dim: var(--bixx-dim);
+  --color-gold: var(--bixx-gold);
+  --color-gold-ink: var(--bixx-gold-ink);
+  --color-live: var(--bixx-live);
+  --color-accent: var(--bixx-accent);
+  --color-header: var(--bixx-header);
+  --color-odds-home: var(--bixx-odds-home);
+  --color-odds-home-ink: var(--bixx-odds-home-ink);
+  --color-odds-draw: var(--bixx-odds-draw);
+  --color-odds-draw-ink: var(--bixx-odds-draw-ink);
+  --color-odds-away: var(--bixx-odds-away);
+  --color-odds-away-ink: var(--bixx-odds-away-ink);
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bixx-base: #121212;
+  --bixx-panel: #1a1a1a;
+  --bixx-panel-2: #242424;
+  --bixx-raise: #2c2c2c;
+  --bixx-line: #333333;
+  --bixx-ink: #ffffff;
+  --bixx-dim: #b8b8b8;
+  --bixx-gold: #ffdf1b;
+  --bixx-gold-ink: #1a1a1a;
+  --bixx-live: #ff4d4d;
+  --bixx-accent: #00e676;
+  --bixx-header: #126e51;
+  --bixx-odds-home: #173d31;
+  --bixx-odds-home-ink: #9aefc2;
+  --bixx-odds-draw: #3d3824;
+  --bixx-odds-draw-ink: #f3d27a;
+  --bixx-odds-away: #1e2f4d;
+  --bixx-odds-away-ink: #9ec5ff;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bixx-base: #eef1f4;
+  --bixx-panel: #ffffff;
+  --bixx-panel-2: #f4f6f8;
+  --bixx-raise: #e7ebf0;
+  --bixx-line: #d5dbe3;
+  --bixx-ink: #141414;
+  --bixx-dim: #5c6773;
+  --bixx-gold: #c9a400;
+  --bixx-gold-ink: #1a1a1a;
+  --bixx-live: #d63b2a;
+  --bixx-accent: #0a8f4d;
+  --bixx-header: #0e5c44;
+  --bixx-odds-home: #d7f3e5;
+  --bixx-odds-home-ink: #0f5132;
+  --bixx-odds-draw: #fff1c7;
+  --bixx-odds-draw-ink: #6b4f00;
+  --bixx-odds-away: #d9e6ff;
+  --bixx-odds-away-ink: #1a365d;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bixx-base);
+  color: var(--bixx-ink);
+  font-family: var(--font-sans);
+}
+
+.odds-figure {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.live-dot {
+  animation: live-dot 1.2s ease-in-out infinite;
+}
+
+@keyframes live-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--bixx-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
