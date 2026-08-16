@@ -1,12 +1,12 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ApiError } from "@/lib/api/client";
-import { readStoredPhone, useAuthAction } from "@/hooks/use-auth-form";
+import { readStoredCode, readStoredPhone, useAuthAction } from "@/hooks/use-auth-form";
 
 const FIELDS = {
   login: [
@@ -27,12 +27,23 @@ const FIELDS = {
 
 type AuthFormProps = { action: keyof typeof FIELDS; title: string; submitLabel: string };
 
+let verifyAutoStarted = false;
+
 export function AuthForm({ action, title, submitLabel }: AuthFormProps) {
   const [values, setValues] = useState<Record<string, string>>(() => ({
     phone_number: action === "verify" ? readStoredPhone() : "",
+    verification_code: action === "verify" ? readStoredCode() : "",
   }));
   const [localError, setLocalError] = useState("");
   const auth = useAuthAction(action);
+
+  useEffect(() => {
+    if (action !== "verify" || verifyAutoStarted) return;
+    if (!values.phone_number || !values.verification_code) return;
+    verifyAutoStarted = true;
+    auth.mutate(values as never);
+   
+  }, []);
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -78,8 +89,9 @@ export function AuthForm({ action, title, submitLabel }: AuthFormProps) {
                       ? "email"
                       : field.name === "phone_number"
                         ? "tel"
-                        : undefined
+                        : "one-time-code"
               }
+              readOnly={action === "verify" && Boolean(values.verification_code) && !auth.isError}
               maxLength={field.name === "phone_number" ? 12 : field.name === "verification_code" ? 6 : undefined}
               value={values[field.name] ?? ""}
               onChange={(event) =>
@@ -96,8 +108,8 @@ export function AuthForm({ action, title, submitLabel }: AuthFormProps) {
 
         {error ? <p className="text-[12px] text-live">{error}</p> : null}
 
-        {action === "register" && auth.isSuccess ? (
-          <p className="text-[12px] text-dim">Code sent. Enter it on the next page.</p>
+        {action === "verify" && values.verification_code && !auth.isError ? (
+          <p className="text-[12px] text-dim">Code filled from signup. Confirming your account.</p>
         ) : null}
 
         <p className="text-center text-[12px] text-dim">

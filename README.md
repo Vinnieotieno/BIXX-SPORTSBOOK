@@ -1,7 +1,3 @@
-# Bixx Sportsbook
-
-Next.js 15 App Router front end for the Bixx gateway, in TypeScript with
-Tailwind v4 and shadcn-style primitives.
 
 ## Run
 

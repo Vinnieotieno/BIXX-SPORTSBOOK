@@ -71,7 +71,11 @@ export type VerifyRequest = { phone_number: string; verification_code: string };
 
 export type LoginResponse = { accessToken: string; refreshToken?: string };
 
-export type RegisterResponse = { message?: string; verificationCode?: string };
+export type RegisterResponse = {
+  message?: string;
+  verificationCode?: string;
+  verification_code?: string;
+};
 
 export type VerificationResponse = { message?: string };
 
