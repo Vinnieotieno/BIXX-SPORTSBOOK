@@ -31,26 +31,41 @@ export function MatchScore({
       : null;
   const hero = size === "hero";
 
+  if (hero) {
+    return (
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1">
+        <p className="truncate text-[22px] font-semibold tracking-tight sm:text-[26px]">{event.home}</p>
+        <p
+          className={cn(
+            "odds-figure min-w-8 text-right font-semibold tabular-nums",
+            live ? "text-2xl text-accent" : "text-2xl text-ink",
+          )}
+        >
+          {score ? score.home : ""}
+        </p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-dim">vs</p>
+        <span />
+        <p className="truncate text-[22px] font-semibold tracking-tight sm:text-[26px]">{event.away}</p>
+        <p
+          className={cn(
+            "odds-figure min-w-8 text-right font-semibold tabular-nums",
+            live ? "text-2xl text-accent" : "text-2xl text-ink",
+          )}
+        >
+          {score ? score.away : ""}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className={cn("grid grid-cols-[minmax(0,1fr)_auto] items-center", hero ? "gap-x-6 gap-y-2" : "gap-x-3 gap-y-0.5")}>
-      <p className={cn("truncate font-semibold", hero ? "text-xl" : "text-[13px]")}>{event.home}</p>
-      <p
-        className={cn(
-          "odds-figure min-w-8 text-right font-black tabular-nums",
-          hero ? "text-3xl" : "text-sm",
-          live ? "text-accent" : "text-ink",
-        )}
-      >
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0.5">
+      <p className="truncate text-[13px] font-semibold">{event.home}</p>
+      <p className={cn("odds-figure min-w-8 text-right text-sm font-black tabular-nums", live ? "text-accent" : "text-ink")}>
         {score ? score.home : ""}
       </p>
-      <p className={cn("truncate font-semibold", hero ? "text-xl" : "text-[13px]")}>{event.away}</p>
-      <p
-        className={cn(
-          "odds-figure min-w-8 text-right font-black tabular-nums",
-          hero ? "text-3xl" : "text-sm",
-          live ? "text-accent" : "text-ink",
-        )}
-      >
+      <p className="truncate text-[13px] font-semibold">{event.away}</p>
+      <p className={cn("odds-figure min-w-8 text-right text-sm font-black tabular-nums", live ? "text-accent" : "text-ink")}>
         {score ? score.away : ""}
       </p>
     </div>

@@ -21,6 +21,8 @@ export function SiteHeader() {
     { href: "/bets", label: "My Bets", active: pathname.startsWith("/bets") },
   ];
 
+  const isAuth = ["/login", "/register", "/verify"].includes(pathname);
+
   return (
     <header className="z-30 shrink-0 bg-header text-white">
       <div className="flex h-14 items-center gap-6 px-4">
@@ -28,23 +30,25 @@ export function SiteHeader() {
           <span className="text-[24px] font-semibold tracking-tight text-gold">bixx</span>
         </Link>
 
-        <nav className="hidden h-full items-center md:flex">
-          {items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "relative flex h-full items-center px-4 text-[13px] font-semibold text-white/85 hover:text-white",
-                item.active && "text-white",
-              )}
-            >
-              {item.label}
-              {item.active ? (
-                <span className="absolute inset-x-3 bottom-0 h-[3px] rounded-t bg-accent" />
-              ) : null}
-            </Link>
-          ))}
-        </nav>
+        {!isAuth ? (
+          <nav className="hidden h-full items-center md:flex">
+            {items.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "relative flex h-full items-center px-4 text-[13px] font-semibold text-white/85 hover:text-white",
+                  item.active && "text-white",
+                )}
+              >
+                {item.label}
+                {item.active ? (
+                  <span className="absolute inset-x-3 bottom-0 h-[3px] rounded-t bg-accent" />
+                ) : null}
+              </Link>
+            ))}
+          </nav>
+        ) : null}
 
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />

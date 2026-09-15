@@ -12,13 +12,14 @@ function OtherMarket({ event, market }: { event: SportEvent; market: Market }) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="normal-case tracking-normal">{displayMarketName(market)}</CardTitle>
+      <CardHeader className="px-4">
+        <CardTitle>{displayMarketName(market)}</CardTitle>
       </CardHeader>
-      <div className={cn("grid gap-1.5 p-3", columns)}>
+      <div className={cn("grid gap-2 p-4", columns)}>
         {outcomes.map((outcome) => (
           <OddsButton
             key={outcome.id}
+            size="lg"
             suspended={outcome.suspended}
             tone="neutral"
             caption={outcome.label}
@@ -36,27 +37,34 @@ export function MarketList({ event }: { event: SportEvent }) {
   const slots = oneXTwoSlots(primary?.outcomes ?? [], event.home, event.away);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {primary ? (
         <Card>
-          <CardHeader>
-            <CardTitle className="normal-case tracking-normal">1X2</CardTitle>
+          <CardHeader className="px-4">
+            <div>
+              <CardTitle>1X2</CardTitle>
+              <p className="mt-0.5 text-[12px] text-dim">Pick the match winner. Draw is locked when a winner is required.</p>
+            </div>
           </CardHeader>
-          <div className="p-3">
-            <OneXTwoGrid slots={slots} event={event} market={primary} />
+          <div className="p-4">
+            <OneXTwoGrid slots={slots} event={event} market={primary} size="lg" />
           </div>
         </Card>
       ) : null}
 
-      <div id="more-markets" className="scroll-mt-24 space-y-2">
-        {others.length === 0 ? (
-          <p className="rounded-xl bg-panel px-4 py-6 text-center text-sm text-dim">
-            No other markets for this match.
-          </p>
-        ) : (
-          others.map((market) => <OtherMarket key={market.id} event={event} market={market} />)
-        )}
-      </div>
+      {others.length > 0 ? (
+        <div id="more-markets" className="scroll-mt-24 space-y-3">
+          <div className="flex items-end justify-between px-1">
+            <h2 className="text-[18px] font-semibold tracking-tight">More markets</h2>
+            <p className="text-[12px] text-dim">{others.length} available</p>
+          </div>
+          {others.map((market) => (
+            <OtherMarket key={market.id} event={event} market={market} />
+          ))}
+        </div>
+      ) : (
+        <div id="more-markets" className="scroll-mt-24" />
+      )}
     </div>
   );
 }

@@ -1,8 +1,6 @@
 import { Suspense } from "react";
-import { BetSlip } from "@/components/betting/bet-slip";
-import { MobileBetSlip } from "@/components/betting/mobile-bet-slip";
+import { AppFrame } from "./app-frame";
 import { SiteHeader } from "./site-header";
-import { SportSidebar } from "./sport-sidebar";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -10,18 +8,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Suspense>
         <SiteHeader />
       </Suspense>
-      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[272px_minmax(0,1fr)_300px]">
-        <aside className="hidden min-h-0 overflow-y-auto border-r border-line bg-panel lg:block">
-          <SportSidebar />
-        </aside>
-        <main className="min-h-0 min-w-0 overflow-y-auto px-3 pb-24 lg:px-4 lg:pb-3">
-          {children}
-        </main>
-        <aside className="hidden min-h-0 overflow-y-auto border-l border-line bg-panel p-3 lg:block">
-          <BetSlip />
-        </aside>
-      </div>
-      <MobileBetSlip />
+      <Suspense>
+        <AppFrame>{children}</AppFrame>
+      </Suspense>
     </div>
   );
 }
