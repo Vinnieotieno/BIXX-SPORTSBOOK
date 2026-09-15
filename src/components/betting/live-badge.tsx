@@ -23,7 +23,12 @@ export function MatchScore({
   size?: "row" | "hero";
 }) {
   const live = event.status === "LIVE";
-  const score = event.score ?? (live ? { home: 0, away: 0 } : null);
+  const raw = event.score;
+  const score = live
+    ? (raw ?? { home: 0, away: 0 })
+    : raw && (raw.home !== 0 || raw.away !== 0)
+      ? raw
+      : null;
   const hero = size === "hero";
 
   return (

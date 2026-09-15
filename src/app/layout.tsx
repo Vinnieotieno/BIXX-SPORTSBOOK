@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
+import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
 import { Providers } from "@/components/layout/providers";
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-playfair",
+});
 
 export const metadata: Metadata = {
   title: "Bixx Sportsbook",
@@ -13,8 +22,8 @@ if("serviceWorker" in navigator){navigator.serviceWorker.getRegistrations().then
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
-      <body>
+    <html lang="en" data-theme="dark" className={playfair.variable} suppressHydrationWarning>
+      <body className={`${playfair.className} antialiased`}>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
         <Providers>
           <AppShell>{children}</AppShell>

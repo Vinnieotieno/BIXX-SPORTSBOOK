@@ -9,7 +9,6 @@ import { PromoCarousel } from "@/components/lobby/promo-row";
 import { SportRail } from "@/components/lobby/sport-rail";
 import { Skeleton } from "@/components/ui/skeleton";
 import { bySport, useEvents } from "@/hooks/use-catalogue";
-import { cn } from "@/lib/utils";
 
 export function LobbyPage() {
   const params = useSearchParams();
@@ -33,8 +32,8 @@ export function LobbyPage() {
   }, [data, inPlay, query, sportId]);
 
   return (
-    <div className="space-y-4">
-      <div className="sticky top-0 z-20 -mx-3 space-y-3 bg-base px-3 pb-3 pt-3 lg:-mx-4 lg:px-4">
+    <div className="space-y-5">
+      <div className="sticky top-0 z-20 -mx-3 space-y-3 bg-base/95 px-3 pb-3 pt-3 backdrop-blur-md lg:-mx-4 lg:px-4">
         <label className="relative block">
           <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-dim">
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
@@ -45,8 +44,8 @@ export function LobbyPage() {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search"
-            className="h-12 w-full rounded-full bg-raise pl-11 pr-4 text-sm text-ink placeholder:text-dim"
+            placeholder="Search matches, teams or tournaments"
+            className="h-12 w-full rounded-full border border-line bg-panel pl-11 pr-4 text-sm text-ink outline-none placeholder:text-dim focus:border-accent/45"
           />
         </label>
         <SportRail sports={sports} activeId={sportId} onSelect={setSportId} />
@@ -54,40 +53,14 @@ export function LobbyPage() {
 
       <PromoCarousel />
 
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        <button
-          type="button"
-          onClick={() => setSportId("all")}
-          className={cn(
-            "shrink-0 rounded-full px-4 py-1.5 text-[13px] font-semibold",
-            sportId === "all" ? "bg-ink text-base" : "text-dim hover:text-ink",
-          )}
-        >
-          Popular
-        </button>
-        {sports.map(([id, sport]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setSportId(id)}
-            className={cn(
-              "shrink-0 rounded-full px-4 py-1.5 text-[13px] font-semibold capitalize",
-              sportId === id ? "bg-ink text-base" : "text-dim hover:text-ink",
-            )}
-          >
-            {sport.name}
-          </button>
-        ))}
-      </div>
-
       {isLoading ? (
-        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
       ) : (
         <>
           <FeaturedMatches events={filtered} />
-          <div className="flex items-center justify-between">
-            <h2 className="text-[15px] font-bold">{inPlay ? "In-Play" : "All matches"}</h2>
-            <Link href="/" className="text-[12px] font-semibold text-dim hover:text-ink">
+          <div className="flex items-end justify-between gap-3 px-0.5">
+            <h2 className="text-[22px] font-semibold tracking-tight">{inPlay ? "In-Play" : "All matches"}</h2>
+            <Link href="/" className="text-[13px] font-medium text-dim hover:text-ink">
               View all
             </Link>
           </div>

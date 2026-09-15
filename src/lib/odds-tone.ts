@@ -2,24 +2,52 @@ import type { Outcome } from "@/lib/api/types";
 
 export type OddsTone = "home" | "draw" | "away" | "neutral";
 
+export type OddsSlot = {
+  outcome: Outcome | null;
+  tone: OddsTone;
+  caption: string;
+};
+
 const isDraw = (label: string) => /\bdraw\b|\btie\b|^x$/i.test(label.trim());
+
+const firstToken = (value: string) => value.trim().toLowerCase().split(/\s+/)[0] ?? "";
+
+function pickSide(outcomes: Outcome[], name: string): Outcome | undefined {
+  const lower = name.toLowerCase();
+  return (
+    outcomes.find((outcome) => outcome.label.toLowerCase() === lower) ??
+    outcomes.find((outcome) => outcome.label.toLowerCase().startsWith(lower)) ??
+    outcomes.find((outcome) => {
+      const token = firstToken(name);
+      return token.length > 2 && outcome.label.toLowerCase().includes(token);
+    })
+  );
+}
 
 export function lineUpOutcomes(outcomes: Outcome[], home: string, away: string): Outcome[] {
   if (outcomes.length < 2 || outcomes.length > 3) return outcomes;
 
   const draw = outcomes.find((outcome) => isDraw(outcome.label));
   const rest = outcomes.filter((outcome) => outcome !== draw);
-  const homeName = home.toLowerCase();
-  const awayName = away.toLowerCase();
-  const homeOutcome =
-    rest.find((outcome) => outcome.label.toLowerCase() === homeName) ??
-    rest.find((outcome) => outcome.label.toLowerCase().includes(homeName.split(" ")[0] ?? "")) ??
-    rest[0];
+  const homeOutcome = pickSide(rest, home) ?? rest[0];
   const awayOutcome = rest.find((outcome) => outcome !== homeOutcome) ?? rest[1];
 
   if (outcomes.length === 2) return [homeOutcome, awayOutcome].filter(Boolean);
   if (draw) return [homeOutcome, draw, awayOutcome].filter(Boolean);
   return outcomes;
+}
+
+export function oneXTwoSlots(outcomes: Outcome[], home: string, away: string): OddsSlot[] {
+  const draw = outcomes.find((outcome) => isDraw(outcome.label)) ?? null;
+  const rest = outcomes.filter((outcome) => outcome !== draw);
+  const homeOutcome = pickSide(rest, home) ?? rest[0] ?? null;
+  const awayOutcome = rest.find((outcome) => outcome !== homeOutcome) ?? rest[1] ?? null;
+
+  return [
+    { outcome: homeOutcome, tone: "home", caption: "1" },
+    { outcome: draw, tone: "draw", caption: "X" },
+    { outcome: awayOutcome, tone: "away", caption: "2" },
+  ];
 }
 
 export function toneForOutcome(label: string, index: number, total: number): OddsTone {

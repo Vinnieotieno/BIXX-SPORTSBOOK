@@ -19,8 +19,8 @@
   --color-odds-draw-ink: var(--bixx-odds-draw-ink);
   --color-odds-away: var(--bixx-odds-away);
   --color-odds-away-ink: var(--bixx-odds-away-ink);
-  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: var(--font-playfair), "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-playfair), "Playfair Display", Georgia, "Times New Roman", serif;
 }
 
 :root,
@@ -78,9 +78,9 @@ body {
 }
 
 .odds-figure {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .live-dot {

@@ -49,7 +49,7 @@ export function PromoCarousel() {
 
   return (
     <div
-      className="relative overflow-hidden rounded-xl bg-panel"
+      className="relative overflow-hidden rounded-2xl bg-panel"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -58,18 +58,18 @@ export function PromoCarousel() {
         style={{ transform: `translateX(-${index * 100}%)` }}
       >
         {SLIDES.map((slide) => (
-          <article key={slide.title} className="relative h-44 min-w-full sm:h-52">
+          <article key={slide.title} className="relative h-48 min-w-full sm:h-56">
             <img
               src={slide.image}
               alt=""
               referrerPolicy="no-referrer"
               className="absolute inset-0 h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent" />
-            <div className="relative flex h-full flex-col justify-end p-5">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-accent">{slide.kicker}</p>
-              <h3 className="mt-1 text-2xl font-black text-white">{slide.title}</h3>
-              <p className="mt-1 max-w-md text-[13px] text-white/80">{slide.text}</p>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10" />
+            <div className="relative flex h-full flex-col justify-end p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent">{slide.kicker}</p>
+              <h3 className="mt-1 text-[28px] font-semibold tracking-tight text-white sm:text-[32px]">{slide.title}</h3>
+              <p className="mt-1 max-w-md text-[14px] leading-relaxed text-white/80">{slide.text}</p>
             </div>
           </article>
         ))}

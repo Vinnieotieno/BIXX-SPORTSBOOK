@@ -12,7 +12,7 @@ export default function SportPage({ params }: { params: Promise<{ sportId: strin
 
   return (
     <>
-      <h1 className="mb-3 text-lg font-bold capitalize">
+      <h1 className="mb-4 text-[22px] font-semibold capitalize tracking-tight">
         {events[0]?.sportName ?? sportId}
       </h1>
       {isLoading ? <Skeleton className="h-64 w-full" /> : <EventList events={events} />}

@@ -1,4 +1,5 @@
 import { EventRow } from "./event-row";
+import { ODDS_COL } from "./odds-button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SportEvent } from "@/lib/api/types";
 
@@ -20,13 +21,15 @@ export function EventList({ events }: { events: SportEvent[] }) {
     <div className="space-y-3">
       {Object.entries(groups).map(([competition, list]) => (
         <Card key={competition}>
-          <CardHeader>
-            <CardTitle>{competition}</CardTitle>
-            <span className="odds-figure flex gap-3 text-[11px] font-bold">
+          <CardHeader className="gap-3 px-3">
+            <CardTitle className="min-w-0 flex-1 truncate normal-case tracking-normal">
+              {[list[0]?.sportName, competition].filter(Boolean).join(", ")}
+            </CardTitle>
+            <div className={`${ODDS_COL} grid grid-cols-3 text-center text-[11px] font-bold`}>
               <span className="text-odds-home-ink">1</span>
               <span className="text-odds-draw-ink">X</span>
               <span className="text-odds-away-ink">2</span>
-            </span>
+            </div>
           </CardHeader>
           {list.map((event) => (
             <EventRow key={event.id} event={event} />

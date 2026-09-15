@@ -25,7 +25,7 @@ export function SiteHeader() {
     <header className="z-30 shrink-0 bg-header text-white">
       <div className="flex h-14 items-center gap-6 px-4">
         <Link href="/" className="flex items-baseline gap-0.5">
-          <span className="text-[22px] font-black tracking-tight text-gold">bixx</span>
+          <span className="text-[24px] font-semibold tracking-tight text-gold">bixx</span>
         </Link>
 
         <nav className="hidden h-full items-center md:flex">

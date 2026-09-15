@@ -10,7 +10,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Suspense>
         <SiteHeader />
       </Suspense>
-      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[230px_minmax(0,1fr)_300px]">
+      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[272px_minmax(0,1fr)_300px]">
         <aside className="hidden min-h-0 overflow-y-auto border-r border-line bg-panel lg:block">
           <SportSidebar />
         </aside>

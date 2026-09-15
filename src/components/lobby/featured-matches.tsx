@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { OddsButton } from "@/components/betting/odds-button";
-import { lineUpOutcomes, shortOddsLabel, toneForOutcome } from "@/lib/odds-tone";
-import { toSelection } from "@/lib/selection";
+import { OneXTwoGrid } from "@/components/betting/odds-button";
+import { extraMarketCount, matchWinnerMarket } from "@/lib/markets";
+import { oneXTwoSlots } from "@/lib/odds-tone";
 import type { SportEvent } from "@/lib/api/types";
 
 export function FeaturedMatches({ events }: { events: SportEvent[] }) {
-  const open = events.filter((event) => event.markets[0]?.outcomes.length).slice(0, 6);
+  const open = events.filter((event) => matchWinnerMarket(event)?.outcomes.length).slice(0, 6);
   if (open.length === 0) return null;
 
   const columns = [
@@ -14,10 +14,10 @@ export function FeaturedMatches({ events }: { events: SportEvent[] }) {
   ].filter((column) => column.items.length > 0);
 
   return (
-    <section className="overflow-hidden rounded-xl bg-panel">
-      <header className="flex items-center justify-between px-4 py-3">
-        <h2 className="text-[15px] font-bold">Featured Matches</h2>
-        <Link href="/" className="text-[12px] font-semibold text-dim hover:text-ink">
+    <section className="overflow-hidden rounded-2xl bg-panel">
+      <header className="flex items-end justify-between px-4 py-3.5">
+        <h2 className="text-[22px] font-semibold tracking-tight">Featured Matches</h2>
+        <Link href="/" className="text-[13px] font-medium text-dim hover:text-ink">
           View all
         </Link>
       </header>
@@ -25,33 +25,28 @@ export function FeaturedMatches({ events }: { events: SportEvent[] }) {
         <div className="grid gap-px sm:grid-cols-2">
           {columns.map((column) => (
             <div key={column.title} className="bg-panel p-3">
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-dim">{column.title}</h3>
+              <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-dim">{column.title}</h3>
               <ul className="space-y-3">
                 {column.items.map((event) => {
-                  const market = event.markets[0];
-                  const outcomes = lineUpOutcomes(market.outcomes, event.home, event.away);
+                  const market = matchWinnerMarket(event);
+                  const slots = oneXTwoSlots(market?.outcomes ?? [], event.home, event.away);
+                  const extra = extraMarketCount(event);
                   return (
                     <li key={event.id}>
+                      <p className="mb-0.5 truncate text-[11px] text-dim">{event.competition}</p>
                       <Link
                         href={`/event/${event.id}`}
                         className="mb-1.5 block truncate text-[13px] font-semibold hover:text-gold"
                       >
                         {event.home} vs {event.away}
                       </Link>
-                      <div className="grid grid-cols-3 gap-1">
-                        {outcomes.slice(0, 3).map((outcome, index) => {
-                          const tone = toneForOutcome(outcome.label, index, outcomes.length);
-                          return (
-                            <OddsButton
-                              key={outcome.id}
-                              suspended={outcome.suspended}
-                              tone={tone}
-                              caption={shortOddsLabel(tone, outcome.label, outcomes.length)}
-                              selection={toSelection(event, market, outcome)}
-                            />
-                          );
-                        })}
-                      </div>
+                      <OneXTwoGrid slots={slots} event={event} market={market} />
+                      <Link
+                        href={`/event/${event.id}#more-markets`}
+                        className="mt-1 inline-flex text-[11px] font-bold text-accent hover:underline"
+                      >
+                        +{extra}
+                      </Link>
                     </li>
                   );
                 })}

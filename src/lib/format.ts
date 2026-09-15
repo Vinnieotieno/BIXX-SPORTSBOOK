@@ -16,4 +16,18 @@ export const kickoff = (iso: string) =>
     hour12: false,
   }).format(new Date(iso));
 
+export const kickoffTime = (iso: string) =>
+  new Intl.DateTimeFormat("en-KE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(iso));
+
+export const kickoffDate = (iso: string) =>
+  new Intl.DateTimeFormat("en-KE", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  }).format(new Date(iso));
+
 export const clockLabel = (minute?: number) => (minute == null ? "LIVE" : `${minute}'`);

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 export function Card({ className, ...props }: React.ComponentProps<"section">) {
   return (
     <section
-      className={cn("overflow-hidden rounded-xl bg-panel", className)}
+      className={cn("overflow-hidden rounded-2xl bg-panel", className)}
       {...props}
     />
   );
@@ -25,7 +25,7 @@ export function CardHeader({ className, ...props }: React.ComponentProps<"header
 export function CardTitle({ className, ...props }: React.ComponentProps<"h2">) {
   return (
     <h2
-      className={cn("text-[13px] font-semibold uppercase tracking-wide", className)}
+      className={cn("text-[13px] font-semibold tracking-tight", className)}
       {...props}
     />
   );

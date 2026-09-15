@@ -13,10 +13,12 @@ const SPORT_NAMES: Record<string, string> = {
   "8": "WNBA",
   "10": "MLS",
   "11": "MMA",
+  "14": "Football",
   "16": "Formula 1",
   "18": "Tennis",
   "19": "Football",
   "26": "Cricket",
+  "39": "Tennis",
 };
 
 const pick = <T,>(source: Raw | undefined, keys: string[], fallback: T): T => {
@@ -51,18 +53,70 @@ const specialBetValue = (marketTypeId: number, name: string, handicap?: string |
   return "";
 };
 
+const tidy = (value: string) => value.replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
+
+const looksLikeFixture = (value: string, home: string, away: string) => {
+  const lower = value.toLowerCase();
+  const mentionsTeam =
+    (home.length > 1 && lower.includes(home.toLowerCase())) ||
+    (away.length > 1 && lower.includes(away.toLowerCase()));
+  return /\bat\b|\bvs\.?\b/.test(lower) && mentionsTeam;
+};
+
+const tournamentFromEventName = (eventName: string, home: string, away: string) => {
+  const cleaned = tidy(eventName).replace(/\s*-\s*\d{4}-\d{2}-\d{2}T.*$/, "");
+  const head = (cleaned.split(":")[0] ?? cleaned).trim();
+  if (!head || looksLikeFixture(head, home, away)) return "";
+  const name = (head.split(/\s-\sRound\b/i)[0] ?? head).split(" - ")[0]?.trim() ?? "";
+  if (!name || looksLikeFixture(name, home, away)) return "";
+  return name;
+};
+
+const tournamentFromSeason = (seasonType: string) => {
+  const value = tidy(seasonType);
+  if (!value || /^regular season$/i.test(value)) return "";
+  if (/laliga|la liga/i.test(value)) return "La Liga";
+  if (/premier league/i.test(value)) return "Premier League";
+  if (/serie a/i.test(value)) return "Serie A";
+  if (/bundesliga/i.test(value)) return "Bundesliga";
+  if (/ligue 1/i.test(value)) return "Ligue 1";
+  if (/^\d{4}/.test(value) && value.length < 14) return "";
+  return value;
+};
+
+const tournamentFromLeague = (value: string) => {
+  const text = tidy(value);
+  if (!text || /^\d{4}\s*\/\s*\d{4}/.test(text)) return "";
+  return text;
+};
+
+const resolveCompetition = (raw: Raw, homeTeam: Raw | undefined, awayTeam: Raw | undefined, home: string, away: string, sportName: string) => {
+  const listed = tidy(String(pick(raw, ["tournament", "competition", "league"], "") || ""));
+  const parsed = tournamentFromEventName(pick(raw, ["eventName"], ""), home, away);
+  const season = tournamentFromSeason(pick(raw, ["seasonType"], ""));
+  const league = tournamentFromLeague(
+    pick(homeTeam, ["leagueName"], "") || pick(awayTeam, ["leagueName"], ""),
+  );
+  const main = parsed || listed || season || league || sportName;
+  if (parsed && listed && parsed.toLowerCase() !== listed.toLowerCase()) {
+    return `${listed}, ${parsed}`;
+  }
+  return main;
+};
+
 const toOutcome = (raw: Raw, marketTypeId: number): Outcome | null => {
   const prices = pick<Raw[]>(raw, ["prices"], []);
   const price = prices[0];
   if (!price) return null;
   const name = pick(raw, ["name", "label"], "");
+  const handicap = pick<string | null>(price, ["handicapValue"], null);
   return {
     id: String(pick(price, ["priceId", "id"], pick(raw, ["participantId", "id"], ""))),
-    label: name,
+    label: handicap ? `${name} ${handicap}` : name,
     price: Number(pick(price, ["odds", "price", "value"], 0)),
     suspended: Boolean(pick(price, ["closedAt"], null)),
     teamId: Number(pick(raw, ["rundownId", "teamId", "participantId"], 0)),
-    specialBetValue: specialBetValue(marketTypeId, name, pick(price, ["handicapValue"], null)),
+    specialBetValue: specialBetValue(marketTypeId, name, handicap),
   };
 };
 
@@ -84,18 +138,17 @@ export function toEvent(raw: Raw): SportEvent {
   const markets = pick<Raw[]>(raw, ["markets"], []).map(toMarket);
   const score = pick<Raw | undefined>(raw, ["score"], undefined);
   const sportId = String(pick(raw, ["sportId", "sportKey", "sport"], "other"));
+  const sportName = SPORT_NAMES[sportId] ?? pick(raw, ["sportName", "sport"], `Sport ${sportId}`);
+  const home = teamName(pick(raw, ["homeTeam", "home"], homeTeam));
+  const away = teamName(pick(raw, ["awayTeam", "away"], awayTeam));
 
   return {
     id: String(pick(raw, ["eventId", "id"], "")),
     sportId,
-    sportName: SPORT_NAMES[sportId] ?? pick(raw, ["sportName", "sport"], `Sport ${sportId}`),
-    competition: pick(
-      raw,
-      ["competition", "league", "tournament", "categoryName"],
-      pick(homeTeam, ["leagueName"], "Other") || "Other",
-    ),
-    home: teamName(pick(raw, ["homeTeam", "home"], homeTeam)),
-    away: teamName(pick(raw, ["awayTeam", "away"], awayTeam)),
+    sportName,
+    competition: resolveCompetition(raw, homeTeam, awayTeam, home, away, sportName),
+    home,
+    away,
     startTime: pick(raw, ["eventDate", "startTime", "startsAt", "commenceTime"], new Date().toISOString()),
     status: toStatus(raw),
     minute: pick<number | undefined>(score ?? raw, ["gameClock", "minute", "clock"], undefined),

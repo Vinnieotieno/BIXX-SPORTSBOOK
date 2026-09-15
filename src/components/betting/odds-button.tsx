@@ -2,9 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import { odds as formatOdds } from "@/lib/format";
+import { toSelection } from "@/lib/selection";
 import { useBetSlip } from "@/store/bet-slip";
-import type { OddsTone } from "@/lib/odds-tone";
-import type { Selection } from "@/lib/api/types";
+import type { OddsSlot, OddsTone } from "@/lib/odds-tone";
+import type { Market, Selection, SportEvent } from "@/lib/api/types";
 
 const TONE: Record<OddsTone, string> = {
   home: "bg-odds-home text-odds-home-ink hover:brightness-110",
@@ -14,7 +15,7 @@ const TONE: Record<OddsTone, string> = {
 };
 
 type OddsButtonProps = {
-  selection: Selection;
+  selection?: Selection | null;
   suspended?: boolean;
   tone?: OddsTone;
   caption?: string;
@@ -23,8 +24,20 @@ type OddsButtonProps = {
 export function OddsButton({ selection, suspended, tone = "neutral", caption }: OddsButtonProps) {
   const toggle = useBetSlip((state) => state.toggle);
   const active = useBetSlip((state) =>
-    state.selections.some((s) => s.outcomeId === selection.outcomeId),
+    selection ? state.selections.some((item) => item.outcomeId === selection.outcomeId) : false,
   );
+
+  if (!selection) {
+    return (
+      <div
+        className="flex min-h-11 flex-col items-center justify-center rounded-md bg-raise/70 text-dim"
+        aria-label={`${caption ?? "X"} not available`}
+      >
+        <span className="text-[10px] font-bold uppercase tracking-wider">{caption ?? "X"}</span>
+        <span className="odds-figure text-[13px] font-extrabold">-</span>
+      </div>
+    );
+  }
 
   return (
     <button
@@ -34,7 +47,7 @@ export function OddsButton({ selection, suspended, tone = "neutral", caption }: 
       aria-pressed={active}
       title={selection.outcomeLabel}
       className={cn(
-        "flex min-h-11 flex-col items-center justify-center rounded-md px-1 py-1 transition",
+        "flex min-h-11 w-full flex-col items-center justify-center rounded-md px-1 py-1 transition",
         active ? "bg-gold text-gold-ink ring-1 ring-gold" : TONE[tone],
         suspended && "cursor-not-allowed opacity-40",
       )}
@@ -48,3 +61,48 @@ export function OddsButton({ selection, suspended, tone = "neutral", caption }: 
     </button>
   );
 }
+
+export function OddsSlotButton({
+  slot,
+  event,
+  market,
+}: {
+  slot: OddsSlot;
+  event: SportEvent;
+  market?: Market;
+}) {
+  const selection = slot.outcome && market ? toSelection(event, market, slot.outcome) : null;
+  return (
+    <OddsButton
+      selection={selection}
+      suspended={slot.outcome?.suspended}
+      tone={slot.tone}
+      caption={slot.caption}
+    />
+  );
+}
+
+export function OneXTwoGrid({
+  slots,
+  event,
+  market,
+}: {
+  slots: OddsSlot[];
+  event: SportEvent;
+  market?: Market;
+}) {
+  return (
+    <div className="grid w-full grid-cols-3 gap-1">
+      {slots.map((slot) => (
+        <OddsSlotButton
+          key={slot.outcome?.id ?? slot.caption}
+          slot={slot}
+          event={event}
+          market={market}
+        />
+      ))}
+    </div>
+  );
+}
+
+export const ODDS_COL = "w-[10.5rem] shrink-0 sm:w-[13.5rem]";
